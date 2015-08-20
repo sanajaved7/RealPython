@@ -3,6 +3,7 @@ from forms import AddTaskForm, RegisterForm, LoginForm
 from functools import wraps
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
+import datetime
 
 
 #config
@@ -47,12 +48,19 @@ def login():
             error = 'Both fields are required.'
     return render_template('login.html', form=form, error=error)
 
-@app.route('/tasks')
+@app.route('/tasks/')
 @login_required
 def tasks():
-    open_tasks = db.session.query(Task).filter_by(status='1').order_by(Task.due_date.asc())
-    closed_tasks = db.session.query(Task).filter_by(status='0').order_by(Task.due_date.asc())
-    return render_template('tasks.html', form=AddTaskForm(request.form), open_tasks=open_tasks, closed_tasks=closed_tasks)
+    open_tasks = db.session.query(Task)\
+        .filter_by(status='1').order_by(Task.due_date.asc())
+    closed_tasks = db.session.query(Task) \
+        .filter_by(status='0').order_by(Task.due_date.asc())
+    return render_template(
+        'tasks.html',
+        form=AddTaskForm(request.form),
+        open_tasks=open_tasks,
+        closed_tasks=closed_tasks
+    )
 
 #Add new tasks
 @app.route('/add/', methods=['GET', 'POST'])
@@ -65,7 +73,9 @@ def new_task():
                 form.name.data,
                 form.due_date.data,
                 form.priority.data,
-                '1'
+                datetime.datetime.utcnow(),
+                1,
+                1,
                 )
             db.session.add(new_task)
             db.session.commit()
