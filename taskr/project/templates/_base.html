@@ -8,11 +8,15 @@
         <div class="page">
 
             {% for message in get_flashed_messages() %}
-                <div class="flash"> {{ message }} </div>
+                <div class="flash">
+                    {{ message }}
+                </div>
             {% endfor %}
 
             {% if error %}
-                <div class="error"><strong>Error:</strong> {{ errror }} </div>
+                <div class="error"><strong>Error:</strong>
+                    {{ error }}
+                </div>
             {% endif %}
 
             <br>
