@@ -137,6 +137,24 @@ class AllTests(unittest.TestCase):
             status='1'), follow_redirects=True)
         self.assertIn(b'This field is required.', response.data)
 
+    #test if users can complete tasks
+    def test_users_can_complete_tasks(self):
+        self.create_user('Michael', 'michael@realpython.com', 'python')
+        self.login('Michael', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task()
+        response = self.app.get("complete/1/", follow_redirects=True)
+        self.assertIn(b'Task was marked as complete. Yay!', response.data)
+
+    #test if users can delete tasks
+    def test_users_can_delete_tasks(self):
+        self.create_user('Michael', 'michael@realpython.com', 'python')
+        self.login('Michael', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task()
+        response = self.app.get("delete/1/", follow_redirects=True)
+        self.assertIn(b'The task was deleted!', response.data)
+
 if __name__ == "__main__":
     unittest.main()
 
