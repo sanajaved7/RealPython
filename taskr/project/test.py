@@ -90,6 +90,33 @@ class AllTests(unittest.TestCase):
         response = self.logout()
         self.assertIn(b'Goodbye!', response.data)
 
+    #test if users can access task
+    def test_logged_in_users_can_access_tasks_page(self):
+        self.register(
+            'Fletcher', 'fletcher@realpython.com', 'python101', 'python101')
+        self.login('Fletcher', 'python101')
+        response = self.app.get('tasks/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Add a new task:', response.data)
+
+    def test_not_logged_in_users_cannot_access_tasks_page(self):
+        response = self.app.get('tasks/', follow_redirects=True)
+        self.assertIn(b'You need to login first.', response.data)
+
+    #helper method to create user and tasks
+    def create_user(self, name, email, password):
+        new_user = User(name=name, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+    def create_task(self):
+        return self.app.post('add/', data=dict(
+                name='Go to the bank',
+                due_date='02/05/2015',
+                priority='1',
+                posted_date='08/24/2015',
+                status = '1'), follow_redirects=True)
+
 if __name__ == "__main__":
     unittest.main()
 
