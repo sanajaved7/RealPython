@@ -117,6 +117,26 @@ class AllTests(unittest.TestCase):
                 posted_date='08/24/2015',
                 status = '1'), follow_redirects=True)
 
+    #test if users can add tasks (form validation)
+    def test_users_can_add_tasks(self):
+        self.create_user('Michael', 'michael@realpython.com', 'python')
+        self.login('Michael', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.assertIn(b'New entry success!', response.data)
+
+    def test_users_cannot_add_tasks_when_error(self):
+        self.create_user('Michael', 'michael@realpython.com', 'python')
+        self.login('Michael', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.post('add/', data=dict(
+            name='Go to the bank',
+            due_date='',
+            priority='1',
+            posted_date='02/05/2015',
+            status='1'), follow_redirects=True)
+        self.assertIn(b'This field is required.', response.data)
+
 if __name__ == "__main__":
     unittest.main()
 
