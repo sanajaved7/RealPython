@@ -155,6 +155,19 @@ class AllTests(unittest.TestCase):
         response = self.app.get("delete/1/", follow_redirects=True)
         self.assertIn(b'The task was deleted!', response.data)
 
+    #test users cannot complete tasks that are not created by them
+    def test_users_cannot_complete_tasks_that_are_not_created_by_them(self):
+        self.create_user('Michael', 'michael@realpython.com', 'python')
+        self.login('Michale', 'python')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task()
+        self.logout()
+        self.create_user('Fletcher', 'fletcher@realpython.com', 'python101')
+        self.login('Fletcher', 'python101')
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.get("complete/1/", follow_redirects=True)
+        self.assertNotIn(b'Task was marked as complete. Yay!', response.data)
+
 if __name__ == "__main__":
     unittest.main()
 
