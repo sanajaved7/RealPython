@@ -95,7 +95,7 @@ class TasksTests(unittest.TestCase):
         self.app.get('tasks/', follow_redirects=True)
         self.create_task()
         response = self.app.get("complete/1/", follow_redirects=True)
-        self.assertIn(b'Task was marked as complete. Yay!', response.data)
+        self.assertIn(b'The task is complete. Nice!', response.data)
 
     #test if users can delete tasks
     def test_users_can_delete_tasks(self):
@@ -108,7 +108,7 @@ class TasksTests(unittest.TestCase):
 
     def test_users_cannot_complete_tasks_that_are_not_created_by_them(self):
         self.create_user('Michael', 'michael@realpython.com', 'python')
-        self.login('Michale', 'python')
+        self.login('Michael', 'python')
         self.app.get('tasks/', follow_redirects=True)
         self.create_task()
         self.logout()
@@ -116,7 +116,7 @@ class TasksTests(unittest.TestCase):
         self.login('Fletcher', 'python101')
         self.app.get('tasks/', follow_redirects=True)
         response = self.app.get("complete/1/", follow_redirects=True)
-        self.assertNotIn(b'Task was marked as complete. Yay!', response.data)
+        self.assertNotIn(b'The task is complete. Nice!', response.data)
 
 if __name__ == "__main__":
     unittest.main()
